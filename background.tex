@@ -1,0 +1,121 @@
+% 兌現有文章進行回顧，為我的研究提供重要背景並指出該領域的重要性，充分表達我的論文其重要性
+The basic structure of model contains word segmentation, word embedding, reinforcement learning, recurrent neural networks and attention model, \etc We introduce the details of each technique in the following sections.
+
+\section{Word Segmentation} \label{subsubsec:Word Segmentation}
+Chinese Word Segmentation (CWS) is an important part of Natural Language Processing (NLP). In addition, word segmentation is the basic unit of language and essential factor of language expression. No matter what language, the WS is the basis of NLP tasks such as information retrieval, text classification and emotion analysis. Therefore, we have to distinguish the word in text before we can continue the next step. According to The Second International Chinese Word Segmentation evaluation \cite{The_Second_International_Chinese_Word_Segmentation_Bakeoff}, we chose LTP-3.2 \cite{LTP}, ICTCLAS (2015) \cite{ICTCLAS},Jieba \cite{Jieba}, and THULAC \cite{THULAC} lite for preformance comparsion. The table ~\ref{tab:Comparison-CWS-tools} is the comparsion results of the current CWS tools.
+
+\begin{table}[h]
+\centering
+\footnotesize{
+\captionsetup{width=3in}
+\caption{Comparison results of the current CWS tools}
+\label{tab:Comparison-CWS-tools}
+\begin{tabular}{lccc}
+\hline
+\textbf{METHOD} & \multicolumn{1}{l}{\textbf{TIME}} & \multicolumn{1}{l}{\textbf{ACCURACY}} & \multicolumn{1}{l}{\textbf{RECALL}} \\ \hline
+LTP-3.2         & 3.21s                             & 0.867                                 & 0.896                               \\ \hline
+ICTCLAS (2015)  & 0.55s                             & 0.869                                 & 0.914                               \\ \hline
+Jieba           & 0.26s                             & 0.814                                 & 0.809                               \\ \hline
+THULAC lite     & 0.62s                             & 0.877                                 & 0.899                               \\ \hline
+\end{tabular}}
+\end{table}
+
+Because LTP -3.2 has a better performance in accuracy and recall ratio than other CWS tools, we use LTP as the CWS tool in this paper.
+
+\section{Word Embedding} \label{subsubsec:Word Embedding}
+To make machine learning model can read text information, the collected data needs to be processed first. The most common approach to process words in sentences is Word Embedding, a literal convert to vector method which prepare the Chinese characters and its context for training neural network model. Moreover, the most important advantage is that the word vector can analyze complex context and represent the meanings of words.
+
+\subsection{Continuous Bag-Of-Words and Skip-Gram}
+To do word embedding, we search the Google's open source code word2vec \cite{Word2Vec}, which uses two machine learning models (Continuous Bag of Words, CBOW) and Skip-Gram. Word2vec uses a single hidden layer, fully connected neural network as shown in Fig.~\ref{fig:CbowSkip}.
+
+\begin{figure}[h]
+\centerline{\psfig{figure=./figures/CbowSkip2.pdf}}
+\caption{CBOW and Skip-Gram neural architecture.}
+\label{fig:CbowSkip}
+\end{figure}
+
+In the CBOW model, the training input of the model is the context for a target word, and the output is a set of target words. (\eg, we cloud use "一杯" and "少冰" as context words for "拿鐵" as a target word.) In this case of CBOW, our input is two-word vectors, and the output is a softmax probability of the target word (the goal of training is to expect the maximum probability of softmax corresponding to the target word of the input sample).The input and output of the CBOW and Skip-Gram are opposite. In Skip-Gram model, the input is a target word, and the output of the model is context of target word. (\eg, given an input "拿鐵", we obtain contextual words "一杯" and "少冰")
+
+\subsection{Embeddings From Language Models}
+The previous word embedding approaches have some shortcomings, those methods based on single context-independent representation only learning contextualized word vectors form final LSTM layer. Therefore, to address this problem, Matthew E. Peters \etal proposed a new type of word vector representation called ELMo \cite{ELMo} (Embeddings from Language Models). The vectors derived from the internal layers of the bidirectional language model can capture syntactic and semantic information of words. Thus, we can get generally word representation. ELMo shows significantly improve in the several states of the art NLP problems. Unlike most widely word embedding methods, ELMo is task specific combination of intermediate layers. The word vectors of ELMo are computed based on bidirectional long-short term neural network model. I will go into ELMo’s formula as following Equation ~\ref{eq:ELMo}.
+
+\begin{equation} \label{eq:ELMo}
+E L M o_{k}^{\operatorname{task}}=E\left(R_{k} ; \Theta^{\operatorname{task}}\right)=\gamma^{\operatorname{task}} \sum_{j=0}^{L} s_{j}^{\operatorname{task}} h_{k, j}^{L M}
+\end{equation}
+
+$h_{k, j}^{L M}$ denotes backward and forward context-independent representation from BiLSTM and $s^{t a s k}$ denotes softmax-normalized weights. $\gamma$ is a scalar parameter that allows the task model to scale entire ELMo vector. ELMo improves on baseline downstream tasks and shows the performance across six genera NPL task, question answering, textual entailment, semantic role labeling, coreference resolution, named entity extraction and sentiment analysis in table [xxx].
+
+\section{Reinforcement Learning Neural Network Model}
+
+A simulation of real-world dialogue generation is a difficult and important problem in unsupervised learning. In this paper, we use the Recursive Neural Network combined with both Long-Short Term Memory (LSTM) \cite{LSTM} and Adversarial Generation Network (GAN)\cite{Adversarial_Learning_for_Neural_Dialogue_Generation} to generate sentences. In combining these two deep learning models, we can obtain an innovative neural network model. Dialogues generated via this model are readable and innovative. In the following sections, the neural network architecture are described in detail.
+
+\section{Recurrent Neural Networks}
+
+Recurrent Neural Networks (RNN) is a deep learning model with excellent performance on time series data. In addition, the RNN can deal with word vectors, semantic comprehension, sentences generation, \etc The architecture of RNN consists input units, hidden layers, and output units. An RNN maps an input vector of words representation $\left\{x^{1}, x^{2}, x^{3}, \ldots, x^{t+1}\right\}$, an output set $\left\{y^{1}, y^{2}, y^{3}, \ldots, y^{t+1}\right\}$, and a hidden layer set $\left\{a^{1}, a^{2}, a^{3}, \dots, a^{t+1}\right\}$. As shown in Fig.~\ref{fig:RNN}, the calculation method is as follows.
+
+\begin{equation}
+\begin{aligned} \sigma & : \text { tanh, ReLU } \\ a^{t}=& \sigma\left(a^{t+1}+x^{t}\right) \\ y^{t} &=\operatorname{sofmax}\left(a^{t}\right) \end{aligned}
+\end{equation}
+
+\begin{figure}[htb]
+\centerline{\psfig{figure=figures/RNN2.pdf}}
+\caption{Recurrent Neural Networks.}
+\label{fig:RNN}
+\end{figure}
+
+\section{Long Short Term Memory}
+Long-Short Term Memory (LSTM) is one of the structures of recurrent neural networks. This model has several special gate in the neural layer including input gates, output gates and forget gates. As shown in Figure \ref{fig:LSTM}, an input gate decide which parameters need to be updated, and whether to add the current input into the hidden layer. Moreover, an output gate determines whether the current output is transferred to the next layer of neurons, and the forget gate determines whether the current node's history is retained. The algorithm is shown as follows
+
+\begin{equation}
+\begin{array}{l}{c^{\prime}=g(z) f\left(z_{i}\right)+\mathrm{c} f\left(z_{f}\right)} \\ {\mathrm{a}=\mathrm{h}\left(\mathrm{c}^{\prime}\right) \mathrm{f}\left(\mathrm{z}_{\mathrm{o}}\right)}\end{array}
+\end{equation}
+
+\begin{figure}[h!]
+\centerline{\psfig{figure=figures/LSTM2.pdf}}
+\caption{Long-Short Term Memory architecture}
+\label{fig:LSTM}
+\end{figure}
+
+This target of the LSTM model is to minimize the error of the sentences for generating the correct response, as shown in Figure \ref{fig:ERROR}.
+
+\begin{figure}[h!]
+\centerline{\psfig{figure=figures/ERROR2.pdf}}
+\caption{Error architecture}
+\label{fig:ERROR}
+\end{figure}
+
+\section{Reinforcement Learning}
+Reinforcement Learning (RL) determines whether the sentences produced by the deep learning model are grammatically correct. RL gives positive reward to the generated sentences, if the generated sentence conforms to the grammars and the target actions. In addition, each generated sentences score will affect the next results. Finally, the maximum reward of each generated sentences is calculated for the entire dialogue process. The deep learning model architecture is shown in Figure \ref{fig:RL}.
+
+\begin{figure}[h!]
+\centerline{\psfig{figure=figures/RL2.pdf}}
+\caption{The illustration of Reinforcement Learning.}
+\label{fig:RL}
+\end{figure}
+
+\section{Generative Adversarial Networks}
+he criteria of feedback reward must be evaluated through GAN. Therefore, GAN trains a generator to create sentences and a discriminator to give reward. In order to build a GAN, we trained a discriminator using the dialogue data and then graded the sentences that the generator produced to calculate the feedback reward. The GAN model architecture is shown in Figure 8.
+
+\begin{figure}[h!]
+\centerline{\psfig{figure=figures/GAN2.pdf}}
+\caption{The illustration of Generative Adversarial Network.}
+\label{fig:GAN}
+\end{figure}
+
+
+
+\section{Attention Model}
+{\color{red}{
+	The concept of “attention” has gained popularity recently in training sequence neural networks. The attention models allow a machine to learn alignments between different modalities in sequence data. \eg, speech frames and utterances. 
+	
+	In \cite{Effective_Approaches_to_Attention-based_Neural_Machine_Translation}~\cite{Attention_Is_All_You_Need}, the excellent performance in sequence tasks has been demonstrated.The attention-based model can handle long sentences. In \cite{Effective_Approaches_to_Attention-based_Neural_Machine_Translation}, Luong \etal used an attention model to analyze and evaluate neural machine translation. Moreover, the model compares is compared with global attention and local attention. In addition, the alignment scores can be calculated in three different ways, ‘dot’ and ‘general’, ‘concat’. Finally, the model can be tested in Proceedings of the Conference on Machine Translation(WMT) translation tasks and the translation quality can be evaluated in BLEU (bilingual evaluation understudy), which is a commonly-used evaluation method for machine translation in general. In \cite{Attention_Is_All_You_Need}, the LSTM and RNN of the traditional encoder-decoder are discarded. In addition, a new model architecture called self-attention mechanism was proposed. The inputs of self-attention mechanism are composed of query value, key value and data dimension. Those parameters are used to calculate “Scaled Dot-Porduct Attention” and “Multi-Head Attention”. The equations \ref{eq:AttentionEQ1} of the model are given as follows:
+
+	\begin{equation} \label{eq:AttentionEQ1}
+	\begin{array}{c}{\text { Attention }(Q, K, V)=\operatorname{softmax}\left(\frac{Q K^{T}}{\sqrt{d_{k}}}\right) V} \\ {\text { MultiHead }(Q, K, V)=\text { Concat (head }_{1}, \ldots, \text { head }_{h} ) W^{O}} \\ {\text { where head }_{i}=\text { Attention }\left(Q W_{i}^{Q}, K W_{i}^{K}, V W_{i}^{V}\right)}\end{array}
+	\end{equation}
+}}
+
+% 這邊是我使用attention的方法
+% The core of a probabilistic language model is to assign a probability to a sentence. Due to the nature of sentences that consist of different numbers of words, RNN is naturally introduced to model the conditional probability among words.
+
+% Building a context vector is fairly simple. For a fixed target word, first, we loop over all encoders’ states to compare target and source states to generate scores for each state in encoders. Then we could use softmax to normalize all scores, which are used to generate the probability distribution conditioned on target states. At last, the weights are introduced to make context vector easy to train. The equations used in this mode are shown below:

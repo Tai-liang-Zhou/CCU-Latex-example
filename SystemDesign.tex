@@ -1,0 +1,173 @@
+In our work, by using deep learning techniques, the overall aim of the system is to design a natural language model that can interact with humans and help the user accomplish certain tasks. Therefore, we propose a chatbot system that is constructed based on deep learning neural networks and the model is trained by reinforcement learning. The multiple truns conversation chatbot system model is illustrated in Fig.~\ref{fig:SystemDesign}. In Component 1, the interface for input could be a robot, a mobile phone, a smart speakerny, or any environment the chatbot can deploy to. Next, in Component 2, we perform the data pre-processing on inputs. In this work, we use the Chinese segmentation module of LTP\cite{LTP} to segment a sentence to individual words. Chinese sentence is represented as strings of Chinese characters without explicit delimiters, so the procedures of word segmentation and word embedding are required for our language model construction. Finally, in Component 3, our proposed model contains two neural networks, which are applied to generate sentences and to descript sentences, respectively. The architecture of the models of component 3 contains a hierarchical recurrent neural network (HRNN) and a simple long short-term memory (LSTM). HRNN is used to generate sentences. LSTM is used to criticize the sentences and provide the reward score. We combine the two models to construct generative adversarial networks (GAN) to enhance the quality of generated sentences.
+
+\begin{figure}[h]
+\centerline{\psfig{figure=figures/System2.pdf, width=\linewidth}}
+\caption{The architecture of Language model.}
+\label{fig:SystemDesign}
+\end{figure}
+
+\section{Dictionary data Collection}
+Since the open data of long-term dialogues on the internet is not easy to obtain, we have to collect conversational data for training our neural network model. Therefore, we use a web crawler to obtain dialogue corpuses and movie scripts. we ues those data from the website to be our dictionary words. In addition, the main conversation data is from the emotibot company.
+
+\begin{figure}[h]
+\centerline{\psfig{figure=figures/FBChatbot2.pdf}}
+\caption{The Facebook chat bot architecture.}
+\label{fig:FBChatbot}
+\end{figure}
+
+\section{Language Pre-Processing}
+The quality of the collected data as our training corpus for language processing affects the results of our natural language model. Nevertheless, the dataset requires pre-processing for training the model. We conduct the following language processing steps. First, we divide each sentence into words by using LTP segmentation ~\cite{LTP}, which is a common tool for Chinese word segmentation. Moreover, LTP supports self-definition dictionaries.  We can improve the accuracy of segmentation by a self-defined dictionary. Therefore, we collected 76570 words from Wiki and our restaurant booking corpus to achieve better word segmentation results. 
+
+
+\section{Problem Formulation}
+
+We formulize the problem of the task oriented-chatbots as a sequential decision making process. Given a conversation dialogue dataset $\mathbf{D} = \left\{\left(\mathbf{C}_{i}, \mathbf{R}_{i}\right)\right\}_{i=1}^{N}$. $\forall i,\left(\mathbf{C}_{i}, \mathbf{R}_{i}\right)$ consists of a context $\mathbf{C}_{i}$ and its response $\mathbf{Y}_{i}$. $\mathbf{C_{i}}$ which a includes sequence of utterances denoted by $\mathbf{C_{i}} = \left(u_{i,1}, \ldots, u_{i,s}\right)$, where $i$ is an index in the dataset and $s$ is the number of utterances in the context of the previous conversation. The corresponding responses are denoted by $\mathbf{R_{i}} = \left(y_{i,1},\ldots,y_{i,m}\right)$, where the $y_{i,m}$ represents the $m$-th word token in the sentence. To add the extracted information in the utterances, we concatenate action codes, dialogue manage codes and person codes, respectively. Therefore, the final $\mathbf{R_{i}}$ is represented as $\mathbf{R_{i}} = \left(y_{i,1},\ldots,y_{i,m},a_{i},m_{i},p_{i}\right)$.
+
+We aim to estimate a generation probability $p = \left(\mathbf{R}_{i}|\mathbf{C}_{i} \right)$ from the dataset. When given a new conversation context $\mathbf{C}_{i}$, we can generate a response $\mathbf{R}_{i} = \left(y_{1},\ldots,y_{t}\right)$ according to the probability distribution $p$. In the following, we demonstrate how to construct the model to learn the distribution $p$.
+
+\section{Deep Learning Models}
+
+The input of chatbot models usually are natural language sentences uttered by a user and output a response. To enhance the quality of sentences, a generative adversarial network is adopted in our model, for it uses a discriminative model to guide the training of the generative model as a reinforcement learning policy. Therefore, the basic architecture of our deep learning model contains a generator and a discriminator for generating coherent and semantically meaningful dialogues. There are two main parts included in the generative model, the encoder and the decoder networks. The encoder network takes the word embeddings of the source sentence as input and produces a word representation. Every input sentence has a corresponding action code, a dialogue manage code, and a persona code. The generator incorporates such informative signals into all generative steps through a model, which takes the extracted features of the current generated words and outputs a latent vector to guide the word module for a next-word generation. As mentioned above, the high-level extracted features are used to the encoder net to further help the guidance in the decoder and the decoder at each time step generates predictions based on previously predicted words for generating sentences. A discriminator is a long-short term memory model to criticize and assign rewards based on the difference between the generated sentences and real responses. In the following section the architecture is described in detail.
+
+{\color{red}{
+\subsection{Generator}
+
+ A major task of a generator is to automatically generate a diverse sentence with a corresponding action code, a dialogue manage code, and a persona code. In particular, the sequence of input that contains these parameters are very critical to a successful generator. Given the input sentence $\vec{u}=x_{1}, \ldots, x_{n},<$eos$>,<a_{x}>,<m_{x}><p_{x}>$ , where $x_{1 : n}$ are input words of  a sentence. In a sequence-to-sequence generation model, inputs are paired up with the sequence of outputs at each time step to predict $\vec{y}=y_{1}, \ldots, y_{m},<$ eos $>,<a_{y}>,<m_{y}><p_{y}>$. For each sequence data, the $eos$ denotes the end of sentence code, and $a_{x}$, $m_{x}$, and $p_{x}$ denote an action code, a dialogue manage code, and persona code, respectively. In the following section, we explain the details of our generator model, which is constructed by encoders and decoders.
+
+\subsubsection{Encoder}
+
+In order to generate a sentence that contains enough conversation information, we build an encoder based on the standard hierarchical bidirectional recurrent neural network with long short term-memory cells (BiLSTM) model. We utilize a embedding layer $Emb\left(\cdot\right)$ for transforming the words $x_{1:n}$ in utterances $\vec{u}$ to a sequence of embeddings. Then, the vectors form the embedding layer are processed by the BiLSTM to represent the sentence-level vectors. At the forward step, BiLSTM reads the embedding vectors form $x_{1}$ to $x_{n}$ and computes a sequence of forward hidden states $h_{forward}$. At the backward step, the BiLSTM is employed to read the reversed sequence from $x_{n}:x_{1}$ and computes the backward hidden states $h_{backward}$. The $BiLSTM$ and $Emb\left(\cdot\right)$ are represented as Equation \ref{eq:BiLSTM}.
+
+\begin{equation} \label{eq:BiLSTM}
+\begin{array}{l}
+E = Emb\left(x_{1},\ldots,x_{n}\right)\\
+\mathbf{h}_{s} = BiLSTM\left(E\right)_{s}
+\end{array}
+\end{equation} 
+
+, where the $BiLSTM\left(\cdot\right)_{s}$ returns the final hidden states $\mathbf{h}_{s}$ by using the input and forget gates to determine how to update the network. The $s$ denotes the $s$-th utterance in the dialogue.  The states of $h_{forward/backward}$ are derived from Equation \ref{eq:forwardRNN} with the algorithm of $BiLSTM\left(\cdot\right)$.
+
+\begin{equation} \label{eq:forwardRNN}
+\begin{array}{l}
+% f_{t}=\sigma\left(W_{f} \cdot\left[h_{t-1}, x_{t}\right]+b_{f}\right)\\
+% i_{t}=\sigma\left(W_{i} \cdot\left[h_{t-1}, x_{t}\right]+b_{i}\right)\\
+% o_{t}=\sigma\left(W_{o}\left[h_{t-1}, x_{t}\right]+b_{o}\right)\\
+\tilde{C}_{t}=\tanh \left(W_{C} \cdot\left[h_{t-1}, x_{t}\right]+b_{C}\right)\\
+C_{t}=f_{t} * C_{t-1}+i_{t} * \tilde{C}_{t}\\
+h_{t}=o_{t} * \tanh \left(C_{t}\right)\\
+\mathbf{h}_{forward} = \left(\overrightarrow{h_{1}}, \ldots,\overrightarrow{h_{s}}\right) ,
+\mathbf{h}_{backward} = \left(\overleftarrow{h_{1}}, \ldots,\overleftarrow{h_{s}}\right)
+\end{array}
+\end{equation}
+
+At each time step $t$, the word $x_{t}$ and the hidden state $h_{t-1}$ are used to calculate cell state $\tilde{C}_{t}$, which decide how much information is used to update the current cells state $C_{t}$. The main cells $C_{t}$ is updated by the value of input gate $i_{t}$, forget gate $f_{t}$ and the main cells state $C_{t-1}$ at the last time step. The fucntion $tanh\left(\cdot\right)$ takes the previously generated $C_{t}$ and multiples with the output gate $o_{t}$ for obtaining the final hidden state $h_{t}$. Then we concatenate both $h_{forward}$ and $h_{backward}$  as the sentence-level vector, which has the information about words surrounding the $n$-th word. The equation is given by Equation \ref{eq:ConcateBiRNN}.
+
+\begin{equation} \label{eq:ConcateBiRNN}
+    \mathbf{H} = concat\left(\mathbf{h}_{forward}, \mathbf{h}_{backward}\right)
+\end{equation}
+
+
+The last part of encoder is a LSTM layer, which adapts the sentence-level values $H$ for generating the decoder initial states $ini_{state}$ and the inputs of attention state $att_{state}$. 
+
+\begin{equation} \label{eq:LASTLSTM}
+\mathbf{ini_{state}, att_{state}} = LSTM\left(H\right)
+\end{equation}
+
+The attention layer can be formula as equation \ref{eq:Attention}, which computers the weight average of contextualized utterance vectors to represent the whole conversation. The larger weights the vector is, the more important utterance is. In the decoder step, the state $U$ is used to predict outputs.
+
+\begin{equation} \label{eq:Attention}
+\begin{array}{l}
+U = Atten\left(att_{state}\right)
+\end{array}
+\end{equation}
+
+
+
+\subsubsection{Decoder}
+The decoder of the model is a single layer LSTM, which is used to decode the encoder outputs and generate word vectors with information codes. In the decoder step, the initial hidden state are initialed with the outputs of the encoder states. At every time step, the attention mechanism provides additional input to the hidden state of the LSTM, where is form the first word in the original order. In addition, the decoder inputs are determined by the training step or testing step. Therefore, the final outputs of decoder $e_{y_{t}}$ are formulated as Equation \ref{eq:decoderLSTM}.
+
+\begin{equation}
+\label{eq:decoderLSTM}
+e_{y_{t}} = LSTM\left(\left[h_{t-1};U;e\right]\right)
+\end{equation}
+
+
+, where the $h_{t-1}$ is the hidden state of the previous word, $U$ is the extra-values from the attention mechanism, $e$ is the embedding vectors of input. In the training step, the decoder inputs are represented as $e_{x}$, which is a corresponding answer to the dialogue pairs in the dataset. In the testing step, the decoder inputs are the outputs at the previous time step and represented as $e_{y_{t-1}}$.
+
+\begin{equation}
+e=\left\{\begin{array}{ll}{e_{x}} & {\text { For the training step. }} \\ {e_{y_{t-1}}} & {\text { For the testing step. }}\end{array}\right.
+\end{equation}
+
+\subsubsection{Loss Function}
+
+The model learns the probability distribution over the vocabulary $V$ when given input sequences of dialogues. As previously discussed, the model receives the multiple sentences word embedding vectors that representing words in lower dimensions and predicts the output words based on the probability distribution $V$. When training the model, we take the decoder hidden state outputs and feed it into a softmax activation function, which produces the probabilities over all words in the dictionary. The equations of probabilities distribution for calculating the each word of sentence are shown in Equation \ref{eq:eqLSTM}:
+
+\begin{equation} \label{eq:eqLSTM}
+\begin{array}{l}{\mathrm{P}(\mathrm{Y} | \mathrm{U})} \\ {=\prod_{t=1}^{m} p\left(y_{t} | U, y_{1}, y_{2} \ldots, y_{t-1}\right)} \\ {=\prod_{t=1}^{m} \frac{\exp \left(f\left(h_{t}, e_{j}\right)\right)}{\sum_{j=1}^{k} \exp \left(f\left(h_{t}, e_{j}\right)\right)}}\end{array}
+\end{equation}
+
+, where $U$ is the past input sentences and $y_{1}, y_{2} \ldots, y_{t-1}$ are previous predicted words. The $h_{t}$ denotes values of the LSTM history unit that is computed  based on cell state values and output values. The $e_{t}$ denotes the vector for a word. The $f\left(h_{t}, e_{t}\right)$ is an activation function and the inputs contains $h_{t}$ and $e_{t}$. For all possible word $\left(j = 1,\cdots,k\right)$ in the dictionary, where $e_{j}$ are the rows in the $V$ weight matrix of the softmax function. In the end, the loss values can be calculate by using the cross-entropy loss function, which computes the difference of the predictions compared to the raw data. The cross-entropy can be used as an error measure when the outputs of a network can be thought of as representing independent hypotheses, and the node activations can be understood as representing the probability that each hypothesis might be true. In our work, the output word vectors represent a probability distribution, and the cross-entropy loss function indicates the deviation from the correct neural network distribution.
+
+\begin{equation}
+    \operatorname{Loss}\left(\boldsymbol{y}_{i}, \hat{\boldsymbol{y}}_{i}\right)=-\boldsymbol{y}_{i} \log \left(\hat{\boldsymbol{y}}_{i}\right)
+\end{equation}
+
+
+where $\hat{y}_{i}$ is the vector of the predicted probabilities over all words in the vocabulary at step $i$, and $y_{i}$ is the one-hot vector over the vocabulary. A one-hot vector is made up of zeros except at the index of the one true word that follows in the sequence, where it is equal to 1. After computing the derivative with respect to all of the weights in the network using the backpropagation through time algorithm, the weights can be updated in order to get closer to an optimum with optimization techniques. Therefore, the loss is backpropagated through each time-step of the network to learn neural network's parameters. To conclude, we utilize cross-entropy \cite{Rubinstein:2004:CEM:1014902} to be the loss function and predict the words at each time step to facilitate our response generation model. In the end, the model is able to output grammatical and coherent responses that are diverse and interesting. 
+}}
+\subsection{Discriminator}
+
+A seq2seq generator model tries to generate responses that mimic the training data and a discrimminator model that implemented as an LSTM based zero to one classifier in this work. The discriminator tries to figure out whether the generated response came from the dataset or the generator model. Both of the networks are trained on whether the discriminator guessed correctly. Hence, the reward for the generator network comes from the discriminator model and represents whether the gernerator managed to feel the discriminator. For the inputs at each time step, the discriminator outputs the probability distribution of the next word. To calculate a reward,  a raw response data $y_{t}$ is given  for computing  the likelihood of the next word. The formula $D_{\emptyset}\left(y_{t, k} | y_{t,<k}\right)$ represent a probability of the next word as shown in Equation ~\ref{eq:DisEQ1}:
+
+\begin{equation} \label{eq:DisEQ1}
+R\left(y_{t, k}\right)=-\log D_{\emptyset}\left(y_{t, k} | y_{t,<k}\right), k=\{1,2, \ldots, K\}
+\end{equation}
+
+To enhance the model to generates diverse and grammatical sentences,  the discriminator assigns lower rewards to the negative sentences and higher rewards to positive sentences. Therefore, we minimize the expected values of negative sentences and maximize the expected values of positive sentences. Thus, the loss function defined form the discriminator is formulated in Equation \ref{eq:DisEQ2}:
+
+\begin{equation} \label{eq:DisEQ2}
+J(\emptyset)=-E_{r a w} \operatorname{data}[R(Y)]+E_{g e n e r a t e d} d a t a[R(Y)]
+\end{equation}
+
+On the other words, if the generator often produces ungrammatical sentences, the discriminator would assign a low reward. On the contrary, the more diverse and informative sentences are produced, the higher reward would be obtained. After discriminator has been trained literately given the generated and raw data. The discriminator learns how to assign low rewards to the incomprehensible sentence and high rewards to fluent sentences. Thus, the discriminator model encourages the generator to generate diverse and informative sentences.
+
+\section{Reward}
+
+To conducting policy gradient training, we update the weights based on rewards and biases in every layers. In this section, we introduce three different types of rewards which consist of word-level, sentence-level, and information-level rewards.
+\subsection{Word-level Reward}
+
+To obtain the rewards of $K$ words in a sentence $y_{t}$.We calculate this reward of words given by Equation \ref{eq:RewardQE1} :
+
+\begin{equation}\label{eq:RewardQE1}
+R\left(y_{t, k}\right)=-\log D_{\emptyset}\left(y_{t, k} | y_{t,<k}\right)
+\end{equation}
+
+, where $D_{\varnothing}$ is a probability distribution that represents that the
+likelihood of the word $y_{t, k}$ is in sentence $y_{t}$ from the raw dataset. $t$
+denotes the sentence at time step $t,$ and $k$ denotes the $k$ -th word in
+sentence $y_{t} .$
+
+\subsection{Sentence-level Reward}
+
+In addition to word-level rewards, the sentence rewards are indispensable. Because the sentence rewards contain contextual relationships derived from sentences. To extract the reward value from sentences, we summate every single reward of wards in a sentence as shown in Equation \ref{eq:RewardQE2}:
+
+\begin{equation}\label{eq:RewardQE2}
+R\left(y_{t}\right)=-\frac{1}{K} \sum_{k=1}^{K} \log D_{\varnothing}\left(y_{t, k} | y_{t,<k}\right)
+\end{equation}
+
+\subsection{Information-level Reward}
+
+Since both word-level and sentence-level rewards cannot represent functional information for executive tasks, we propose to encode the information code and compute the information-level rewards. Therefore, for a sentence of sequence with length $J$ , we calculate the last rewards of $J+1 : J+3$ as the information-value for a sentence at time step $t$, and it can be obtained by the discriminator that computes probability distribution from the raw data.  The formula is given in Equation \ref{eq:RewardQE3}:
+
+\begin{equation}\label{eq:RewardQE3}
+R\left(y_{t}\right)=-\frac{1}{3} \sum_{k=J+1}^{J+3} \log D_{\emptyset}\left(y_{t, k} | y_{t, J+1 : j+3}\right)
+\end{equation}
+
+\section{Policy Gradient Training}
+To increase the sentence diversity, the generator learns how to maximize the higher rewards using a policy gradient method. In \cite{Simple_Statistical_Gradient-Following_Algorithms_for_Connectionist_Reinforcement_Learning}, Williams \etal. proposed a method that represents a prescription for statistical gradient algorithms for reinforcement-learning networks. We apply this policy gradient to enhance our model. The equation is shown in Equation \ref{eq:PGTEQ1}:
+
+\begin{equation}\label{eq:PGTEQ1}
+\nabla_{\theta} J(\theta) \cong \sum_{t=1}^{T} \sum_{k=K+1}^{k+3} \sum_{k=1}^{K} \gamma^{k-1} R_{t, k} \nabla_{\theta} \log G_{\theta}\left(y_{t, k} | y_{t,<k}\right)
+\end{equation}
+
+, where $R_{t, k}=\sum_{i=k}^{K} \gamma^{i-1} R\left(y_{t}\right) R\left(y_{t, i}\right)$ denotes the total reward starting from Step $k$ . The discount rate is defined as $\gamma$ in this formula.

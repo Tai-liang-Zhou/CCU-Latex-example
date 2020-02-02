@@ -1,0 +1,236 @@
+% 本latex 論文格式由DM+ Lab 修正
+
+% 欲修改論文題目、作者、日期等等，請至同目錄之 ntuvars.tex 修改。
+
+% 其他論文內容請至對應之 input 檔修改。
+
+%其餘額外論文所需之文件尚有: (口試時網路上列印)
+%  1. 學位考試同意書
+%  2. 學位論文考試審定書
+%  3. 博碩士論文授權書
+%  4. 碩博士論文電子檔案上網授權書
+
+% 論文封背附有doc檔案，在列印論文時請額外更改姓名、標題後於影印店列印實體論文時使用。
+
+% 欲加入 Watermark 請取消 Watermark Settings 的註解file:///C:/Users/PhillipLab/Desktop/NTU_master_thesis/ntuvars.tex
+% 並在需要 Watermark 的頁面加上 \AddToShipoutPicture{\WatermarkPicture} 
+% 註：之後每一頁都會有 Watermark
+% 在不需要 Watermark 的頁面加上 \ClearShipoutPicture，此後每一頁都將無 Watermark
+
+\documentclass[oneside, a4paper, 12pt]{book}
+
+\usepackage{amssymb}
+\usepackage{times}
+\usepackage{verbatim}
+\usepackage{color}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{epstopdf}
+\usepackage{array}
+\usepackage{setspace}
+
+% Watermark
+\usepackage{eso-pic}
+
+% Watermark Settings
+\newcommand\WatermarkPicture{
+    \put(0,0){
+	    \parbox[b][\paperheight]{\paperwidth}{
+            \vfill
+            \centering	\includegraphics[width=200pt,keepaspectratio]{ccuwatermark}%
+	        \vfill
+        }
+    }
+}
+
+% uncomment this if you want to indent the first paragraph
+\usepackage{indentfirst}
+
+\usepackage{ntu}
+
+% Tables (http://en.wikibooks.org/wiki/LaTeX/Tables)
+\usepackage{tabularx}
+\usepackage{multirow}
+
+% Mathematics (http://en.wikibooks.org/wiki/LaTeX/Mathematics)
+\usepackage{amsmath}
+
+% Algorithms (http://en.wikibooks.org/wiki/LaTeX/Algorithms)
+\usepackage[ruled]{algorithm2e}
+\usepackage{algpseudocode}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+% Theorems / Definition (http://en.wikibooks.org/wiki/LaTeX/Theorems)
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newcommand{\etal}{\emph{et al. }}
+\newcommand{\eg}{\emph{e.g.}}
+\newcommand{\ie}{\emph{i.e.}}
+\newcommand{\etc}{\emph{etc.}}
+% \usepackage{graphicx} 
+%\usepackage{bmpsize}
+
+%%%% add by Willy  may not be OK
+\usepackage[nolist,printonlyused]{acronym}
+\usepackage{nameref}
+\usepackage{mathtools} 
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{caption}
+\usepackage[caption=false]{subfig}
+\newtheorem{Definition}{Definition}
+\usepackage{lscape} %table rotate
+\usepackage{verbatim}
+%\usepackage{subcaption} 
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+%%%%
+
+\setcounter{tocdepth}{2}
+
+\pagestyle{plain}
+
+\begin{document}
+% side page, used for printing on spline.
+% 若需要調整，請修改 ntu.sty 中的 \newcommand{\makeside}{}。
+\makeside
+
+\doublespacing
+% cover page
+\maketitle
+
+\begin{CJK}{UTF8}{nkai}
+\CJKhorz
+　%蝴蝶頁
+\thispagestyle{empty}
+\newpage
+\end{CJK}
+
+% 論文中的第一頁，且需要加上浮水印。
+\AddToShipoutPicture{\WatermarkPicture}
+\maketitle
+%\ClearShipoutPicture %控制每頁浮水印
+
+\frontmatter
+
+\begin{CJK}{UTF8}{nkai}
+\CJKhorz
+
+% 論文中的第二、三、四頁，請依順序插入學位考試同意書、學位論文考試審定書、博碩士論文授權書。
+\makecertification
+
+% comment one of the following unless you are sure you want to 
+% have both english and chinese acknowledgements in your thesis
+%\begin{dedicationEN}
+%\doublespacing
+%	%\input{dedicationEN}
+%\end{dedicationEN}
+
+%\begin{acknowledgementsEN}
+%\doublespacing
+%	%\input{acknowledgementsEN}
+%\end{acknowledgementsEN}
+
+% 論文中的第五頁為致謝。(請更改內容)
+\begin{acknowledgementsCH}
+\doublespacing
+\input{00_acknowledgementsCH}
+\end{acknowledgementsCH}
+
+% 論文中的第六、七頁分別為中文摘要與英文摘要。(請更改內容)
+\begin{abstractCH}
+\doublespacing
+\input{00_abstract_CH}x
+\end{abstractCH}
+
+\begin{abstractEN}
+\doublespacing
+\input{00_abstract_EN}
+\end{abstractEN}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\end{CJK}
+
+\mainmatter
+
+%%主文(請更改內容)
+% input your thesis content here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Chapter 1: Introduction
+\begin{CJK}{UTF8}{nkai}
+\CJKhorz
+\chapter{Introduction}\label{ch-introduction}
+\input{introduction}
+\end{CJK}
+
+
+% 据预处理
+
+% 在神经网络中，对于文本的数据预处理无非是将文本转化为模型可理解的数字，这里都比较熟悉，不作过多解释。但在这里我们需要加入以下四种字符，<PAD>主要用来进行字符补全，<EOS>和<GO>都是用在Decoder端的序列中，告诉解码器句子的起始与结束，<UNK>则用来替代一些未出现过的词或者低频词。
+
+% < PAD>: 补全字符。
+% < EOS>: 解码器端的句子结束标识符。
+% < UNK>: 低频词或者一些未遇到过的词等。
+% < GO>: 解码器端的句子起始标识符。
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %Chapter 4: Your work
+% \chapter{Data Pre-processing} \label{ch-preprocessing}
+% \input{preprocessing-method}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %Chapter 4: Your work
+% \chapter{Traffic Flow Estimation} \label{ch-estimation}
+% \input{flow-estimation}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %Chapter 4: Your work
+% \chapter{Anomaly Detection} \label{ch-detection}
+% \input{anomaly-detection}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %Chapter 5: Experiments
+% \chapter{Experiments} \label{ch-experiment}
+% \input{experiment}   
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Chapter 6: Conclusions
+% \chapter{Conclusions}\label{ch-conclusion}
+% \input{conclusions}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %Chapter 7: Future Work
+% \chapter{Future Work}\label{ch-future_work}
+% \input{futurework}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\backmatter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Bibliography
+\addcontentsline{toc}{chapter}{\bibname}
+\bibliographystyle{ieeetr}%按照引用順序排序%ieeetr
+\singlespacing
+%若發生reference沒有出現(bibtex編譯時出錯)，請先刪除thesis.aux檔案再重新快速編譯一次即可。
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%(請更改內容)
+% input your reference here
+\bibliography{papers}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix
+%\chapter{appendix}
+%\input{appendix}
+\begin{acronym}
+ \acro{AID}{Automatic Incident Detection}
+ \acro{LBS}{Location-Based Service}
+ \acro{GPS}{Global Positioning System}
+ \acro{POI}{Point-Of-Interest}
+ \acro{GUI}{Graphical User Interface}
+ \acro{EWMA}{Exponentially-Weighted Moving Average}
+\end{acronym} 
+
+\end{document}

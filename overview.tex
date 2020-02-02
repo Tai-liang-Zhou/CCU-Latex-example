@@ -1,0 +1,95 @@
+In this section, we first introduce the notations of the symbols used throughout the paper as shown in Table~\ref{tab:symbols}. Note that some symbols may be used as prefixes, and their meanings are explained when used.
+
+% node, edge, directed graph,  sensor on node, sensor on edge,  influence ,
+\begin{Definition} \textbf{(Sensor road network.)} 
+A sensor road network can be represented by a weighted directed graph $G=(S,L)$, which consists of a sensor set $S$, representing a set of sensors on the road network, and a link set $L$ denotes the road segments. The link set $L = \{l_1, l_2, ... , l_{m-1}, l_m\}$ contains all edges which connect two adjacent sensors in $S$, where $m$ is the set size. A link $l_j = (s^i, s^j, w)$ represents the link from sensors $s_i$ to $s_j$ with a weight of $w$.
+%A sensor road network can be represented by a weighted directed graph $G=(V,L)$, which consists of a vertex set $V$, representing the sensors on roads, and a link set $L$ denotes the road section between two sensors. The vertex set $V$ contains a set of interceptions on the road network, while the link set $L = \{l_1, l_2, ... , l_{m-1}, l_m\}$ contains all edges which connect two vertices in $V$, where $m$ is the set size. A link $l_j = (v^s, v^e, w)$ represents the link from $v^s$ to $v^e$ with weight $w$.
+\end{Definition}
+
+% sensor set,
+\begin{Definition} \textbf{(Sensor set.)}
+A sensor set $S = \{ s_1, s_2,..., s_n \}$ contains a set of sensors which are installed on roadsides, where $n$ represents the total number of sensors. A sensor $s_i = (id, loc)$ in a sensor set $S$ resides at location $loc$ with a sensor $id$, where $1 \leq i \leq n$. Due to the directionality of the sensor road network, the link $s_a$ connecting to $s_b$ is not equal to the link $s_b$ connecting to $s_a$. We call $s_a$ a forward sensor of $s_b$; in contrast, $s_b$ is a rearward sensor of $s_a$. Each sensor records traffic data periodically and returns records during a period $\Delta_t$.
+\end{Definition}
+
+% sensorID, lat, long, time, direction, speed, flow
+\begin{Definition} \textbf{(Sensor record set.)}
+A sensor record set $R = \{r_1, r_2,...,r_p\}$ contains all records collected by $S$, where $p$ is the total number of records. A record $r_i = (s_j, f_t, v_t)$ was collected at time $t$ by sensor $s_j$ and the traffic flow $f_t$ was recorded from time $t-\Delta_t$ to time $t$ and the average speed of $f_t$ is $v_t$.
+\end{Definition}
+
+% event, location,
+\begin{Definition} \textbf{(Incident ground truth.)}
+An incident ground truth $GT=\{te_1, te_2,...,te_k\}$ is a set of traffic incidents, where $k$ is the total number of traffic incidents and each $te_i = (loc, t_i)$ in $GT$ represents a traffic incident ($\eg$, fire, collision, traffic hazard), where $loc$ is the location of $te_i$ occurring at time $t_i$. We use the location of a sensor nearest to an incident as its incident's location. 
+\end{Definition}
+
+%
+\begin{Definition} \textbf{(Traffic anomaly.)}
+Due to the occurrence of car incidents, traffic flow on a road may drastically increase or decrease. If an accident occurs, it may cause its traffic flow to decrease at its rearward road segments or to increase at its forward road segments; that is to say, those sections are congested. We consider the traffic flow without the occurrence of incidents as \textit{expected} traffic flow $fl^{exp}$, the traffic flow which has incidents on the road segment as \textit{abnormal} traffic flow $fl^{abn}$, and their subtraction is \textit{flow anomaly value} $fl^{ano}$. The equation is given in Equation~\ref{eq:anomaly_value}. When the traffic flow deviation exceeds a certain value, called the anomaly threshold, the road segment has a traffic anomaly.
+\begin{equation}\label{eq:anomaly_value}
+	fl_t^{ano} = | fl_t^{exp} - fl_t^{abn} |
+\end{equation} 
+\end{Definition}
+
+\subsubsection*{Problem Statement} 
+The problem statement for our work is described as follows. Given a weighted directed sensor road network $G=(S,L)$ and a sensor record set $R$, a result set of the detected traffic incidents $DT=\{te'_1, te'_2,...,te'_q\}$ and the corresponding locations of those traffic incidents are returned, where $q$ is the total number of detected traffic incidents. The objective is to maximize the precision rate when compared with the $GT$ set.
+
+For the purpose of achieving the goal, we propose the HD-AT model. The HD-AT model calculates the flow anomaly value, utilizing the value to infer the types of incident and their locations. The HD-AT model is formulated as Equation~\ref{eq:AT_model}:
+\begin{equation}\label{eq:AT_model}
+	F = {\frac{D \cdot I_c \cdot J_p}{M^2}}
+\end{equation}
+, where $I_c$ represents the corresponding influence of various distinct types of car incidents, such as a car accident or traffic jam. We consider that the more serious incident level has more impacts on traffic flow. $J_p$ is the weight representing the possibility of there being a traffic jam on the road segment. $M$ represents the directional distance between the locations of an incident and the adjacency road segment. $D$ is a constant, representing the traffic density. Finally, $F$ is the flow anomaly value, that is, the deviation between estimated traffic flow and the real traffic flow.
+We utilize Equation~\ref{eq:AT_track} derived from Equation~\ref{eq:AT_model} to detect the occurring incident type on road segments that has traffic anomalies and its location. 
+\begin{equation}\label{eq:AT_track}
+	M = {\sqrt{\frac{D \cdot I_c \cdot J_p}{F}}}
+\end{equation}
+
+
+\begin{table}[!h]
+\begin{center}
+\footnotesize{
+\captionsetup{width=3in}
+\caption{Symbols and functions.}
+\label{tab:symbols}
+\begin{tabular}{|p{50pt}|p{180pt}|}
+\hline
+\textbf{Symbol} & \textbf{Description} \\                                                                                                                                
+\hline
+$loc$  & A GPS position comprises a longitude and a latitude. \\ 
+\hline
+$S$, $s_i$, and $n$  & $S$  is a sensor set deployed in the road network $G$, $s_i$ is a sensor in $S$ and the total number of sensors in $S$ is $n$.\\ 
+\hline
+$G$ = ($S$, $L$) & A weighted directed sensor road network constructed based on the road network. \\ 
+\hline
+$A$ and $A_{ij}$& An $n \times n$ adjacency matrix that indicates the connectivity between sensors in $S$. If $A_{ij}$ equals true, it represents that sensor $s_i$ is connected to sensor $s_j$; otherwise, from $s_i$ to $s_j$ are not connected. \\
+\hline
+$\epsilon_a$ & A threshold for anomaly detection. \\
+\hline
+$\Delta_t$ &  The system detection interval. \\
+\hline
+$R$ and $r_i=(s_j, f_t, v_t)$ & $R$ is a sensor record set. $r_i$ is one record in $R$ and contains three attributes including $s_j$ (the sensor id), $f_t$ (the traffic flow at time $t$), and $v_t$ (average speed of $f_t$).  \\
+\hline
+$GT$ and $te_i$ &  $GT$ is a set of traffic incidents while $te_i$ is a traffic incident. \\
+\hline
+$\epsilon_d$ & A distance threshold.\\ 
+\hline
+$F_{t}^{s}(X)$ & The traffic flow measured by the cumulative distribution function represents the proportion of the number of vehicles passing a sensor $s$ at time $t$, where $X$ is in the range $[0, \Delta_t]$. \\
+\hline
+$fl_t^{exp}$, $fl_t^{abn}$ and $fl_t^{ano}$ & Expected traffic flow without car incidents, abnormal traffic flow, and flow anomaly value at time interval t. \\
+\hline
+$D$ & Traffic density. \\
+\hline
+$I_c$ & Influence of various distinct types of car incidents. \\
+\hline
+$J_p$ & Weights for each road segment. \\
+\hline
+$M$ & Distance between the location of an incident and its adjacent road segment. \\
+\hline
+$F$ & Flow anomaly value. \\
+\hline
+\end{tabular}
+\label{tab:Symbols}}
+\end{center}
+\end{table}
+
+%{\color{red} ** Maybe we should move the following description to the introduction section!**}
+%We describe our observation which motivated us to design traffic flow estimation for anomaly detection. As shown in Figure~\ref{fig:flowmap}, each cross mark represents an incident, and each point represents a sensor with a color that illustrates the traffic flow collected by the sensor. In the color scale in the upper left corner, red shows the slowest traffic flow, while blue shows the fastest traffic flow. We can observe that points near events turn to a colder color, and we can see that the events may decrease the flow of the neighboring sensors. Therefore, with this observation, we propose an approach based on a heat diffusion model that simulates the thermal conduction for estimating the traffic flow affected by the nearby sensors.
+

@@ -1,0 +1,66 @@
+% off-line part : data preprocessing, historical model construction and graph construction
+In this section, we describe the data pre-processing component which performs the data cleansing, data transformation, and sensor road network construction.
+
+%	Data preprocessing 
+%		why? how?
+%		for sensor meta data 
+%			lack of absPM and (latitude,longitude) 
+%		for data records 
+%			returned by type ML 
+\section{Data Cleansing} \label{subsubsec:dc} 
+
+%TODO Introduce the data set first, before you describe how to process it. ~Yuling
+We use the real-world traffic dataset called Caltrans Performance Measurement System (PeMS)~\cite{pemsdataset} to validate our system. The sensors are deployed on the freeway system of the state of California to collect traffic data in real-time. 
+PeMS collects data from various types of vehicle detector stations, including inductive loops, side-fire radars, and magnetometers. A machine installed along roads in California records data from loops on the freeway. Detectors sense the number of vehicles crossed the loops as traffic flow, and the average fraction of time that vehicles travel on the loops as road occupancy. 
+The records which include traffic flow, speed, occupancy, direction, and so on are collected and aggregated every five minutes. 
+%TODO  mention why you need the pre-processing 
+The sensors collect traffic data all year round, and it is inevitable that there will be some wrong records in some fields or missing records at some time intervals on any road segments. In order to make a precise estimation, we have to deal with these noisy data without affecting the performance of our model. 
+
+For the data cleansing procedure, we handle the issue of missing data fields in the data records fetched from the sensors. In this work, we use the real sensor data, the PeMS dataset, to validate our system. Based on our observation from the real sensor dataset, some sensors either lack spatial information or contain incomplete returned records which have missing data fields. 
+% TODO Why does removing Meta data help?
+For the issue of missing spatial information, we remove the sensor meta data if the absolute post-mile fields, latitude, and longitude fields are blank. Due to the importance of these spatial characteristics, we have to remove these sensors which lack these fields to help us construct a precise sensor road network. For the issue of incomplete returned records, only two types of sensors return the actual traffic flow at a five-minute period. One is the ML type, which represents a main lane; the other is the HV type, which represents the high-occupancy lane. Since the HV type sensor connectivity information necessary for the sensor graph construction ($\eg$, entrance and connection between the ML type sensors) is not available, and 96 $\%$ of HV type sensors have only one lane, we ignore HV type sensors and only use the ML type sensors to detect the major causes on the main line.
+
+
+% Historical model contruction definition day-of-week model why? people have
+% different patterns on different day of week example and figure
+\section{Data Transformation}\label{subsubsec:hm} 
+We utilize the historical data collected in the past and transform it into a day-of-the-week format, which is used to detect major causes of abnormal events. The normal and abnormal patterns have been trained by learning from the transformed data. To a certain extent, the mean and standard deviation of the historical data may reflect the normal condition. For example, the mean of the traffic flow in the time interval from 8:30 to 9:00 is different from the mean in the time interval from 22:30 to 23:00. As in the example shown in Table~\ref{tab:day-of-week_Model}, we calculate pairs of the mean and standard deviation of traffic flow collected by sensors in 48 time intervals for each day of the week. The duration of every time interval is 30 minutes in this example.
+We consider that the temporal patterns retrieved from the sensor data can be found in a one week period, and we store the mean and standard deviation values in a day-of-week table for each sensor over two months. As an example in Table ~\ref{tab:day-of-week_Model}, (156.00),(5.88) is a number pair which contains mean and standard deviation values of records collected by Sensor 1 at the time interval {[0:00, 0:30)} on Mondays over two months in the training dataset.
+
+
+
+\begin{table}[h]
+\begin{center}
+\caption{An example of the day-of-week model.}
+\label{tab:day-of-week_Model}
+ \resizebox{\linewidth}{!}{%Resizes the table to \textwidth
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Time interval & Mon              & Tue              & \ldots & Sat              & Sun              \\ \hline
+\multicolumn{6}{|c|}{Sensor 1}                                                                     \\ \hline
+0:00          & (172.00,3.26) & (88.33,1.24)   & \ldots & (88.00,0.81)   & (97.00,1.63)   \\ \hline
+0:30          & (156.00,5.88)  & (79.33,3.29)   & \ldots & (80.66,4.49)   & (86.66,5.31)   \\ \hline
+\multicolumn{6}{|c|}{\ldots}                                                                       \\ \hline
+23:30         & (139.00,1.63)  & (68.00,2.94)   & \ldots & (69.66,1.69)   & (73.66,1.24)   \\ \hline
+\multicolumn{6}{|c|}{Sensor 2}                                                                     \\ \hline
+0:00          & (325.91,38.33) & (193.29,54.17) & \ldots & (124.08,33.47) & (129.14,21.29) \\ \hline
+0:30          & (300.70,53.96) & (153.54,46.22) & \ldots & (102.95,40.53) & (116.71,23.49) \\ \hline
+\multicolumn{6}{|c|}{\ldots}                                                                       \\ \hline
+23:30         & (259.20,50.53) & (132.33,39.60) & \ldots & (106.25,31.44) & (106.28,28.49) \\ \hline
+\end{tabular}
+ }%
+\end{center}
+\end{table}
+%	graph construction
+%		adjecency matrix construction
+%		all pair shortest path matrix construction
+%			why? how?
+%sensor map
+\section{Sensor Road Network Construction}\label{subsubsec:gc}
+Next, we construct a sensor road network which is a weighted directed graph $ G(S,L)$ to indicate the connectivity of the sensors on the road network. We utilize an adjacency matrix $A$ to indicate the neighborhood for our model.
+Furthermore, an all-pair shortest path matrix is pre-computed based on the adjacency matrix by using the Floyd-Warshall algorithm~\cite{cormen2001ia} for evaluation.
+
+
+During sensor road network construction, we sort all sensors of the same direction on the same road by the absolute post-mile field in data records and then connect the sorted neighbor sensors in sequence. Because the connectors of different roads are
+missing, we manually add links between sensors and remove wrong links. We compute the shortest path distance based on a road network to evaluate the quality of connectivity, because the Euclidean distance cannot reflect the actual cost from one location to another. 
+When there are changes in the sensor metadata, we need to reconstruct the sensor road network and the shortest path matrix. However, the sensor metadata are not updated frequently, so the resource spending on the sensor road network and all-pair shortest path matrix construction is tolerable.

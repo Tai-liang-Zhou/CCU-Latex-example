@@ -1,0 +1,6 @@
+We propose a more precise traffic flow approximation based on heat diffusion model for anomaly detection.
+We discuss the difficulties and problems of heat diffusion model on traffic systems and give a solution to improve it.
+We obtain better results of our approach than the related work we based on especially with shorter time interval settings of sensors.
+
+
+
