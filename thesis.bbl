@@ -1,29 +1,5 @@
 \begin{thebibliography}{1}
 
-\bibitem{SIRI}
-E.~Sadun and S.~Sande, {\em Talking to Siri: Learning the Language of Apple's
-  Intelligent Assistant}.
-\newblock Que Publishing Company, 2nd~ed., 2013.
-
-\bibitem{dialogflow}
-``Build natural and rich conversational experiences.''
-  \url{https://dialogflow.com/}.
-
-\bibitem{wit.ai}
-``Natural language for developers.'' \url{https://wit.ai/}.
-
-\bibitem{LUIS}
-``Language understanding (luis).'' \url{https://www.luis.ai/}.
-
-\bibitem{Deep_Reinforcement_Learning_for_Dialogue_Generation}
-J.~Li, W.~Monroe, A.~Ritter, M.~Galley, J.~Gao, and D.~Jurafsky, ``Deep
-  reinforcement learning for dialogue generation,'' {\em CoRR},
-  vol.~abs/1606.01541, 2016.
-
-\bibitem{SeqGAN}
-L.~Yu, W.~Zhang, J.~Wang, and Y.~Yu, ``Seqgan: Sequence generative adversarial
-  nets with policy gradient,'' {\em CoRR}, vol.~abs/1609.05473, 2016.
-
 \bibitem{Bi-LSTM}
 M.~Schuster and K.~Paliwal, ``Bidirectional recurrent neural networks,'' {\em
   Trans. Sig. Proc.}, vol.~45, pp.~2673--2681, Nov. 1997.
