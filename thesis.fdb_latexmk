@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex thesis"] 1580705249 "thesis.aux" "thesis.bbl" "thesis" 1580705253
+["bibtex thesis"] 1580705249 "thesis.aux" "thesis.bbl" "thesis" 1580706973
   "c:/texlive/2019/texmf-dist/bibtex/bst/base/ieeetr.bst" 1580574210 18361 1a00e58565e7f19bf2b3e1bfb82254ae ""
   "papers.bib" 1580705069 474 b06674b34c034df0f481b19a44ddb607 ""
-  "thesis.aux" 1580705252 2358 87c651d699e95ae4923885d9abe217ca "pdflatex"
+  "thesis.aux" 1580706971 2358 87c651d699e95ae4923885d9abe217ca "pdflatex"
   (generated)
-  "thesis.blg"
   "thesis.bbl"
-["pdflatex"] 1580705250 "c:/Users/tom/Documents/CCU_latex_example/thesis.tex" "thesis.pdf" "thesis" 1580705253
+  "thesis.blg"
+["pdflatex"] 1580706969 "c:/Users/tom/Documents/CCU_latex_example/thesis.tex" "thesis.pdf" "thesis" 1580706973
   "00_abstract_CH.tex" 1580360970 1649 a2e41c0d7aa8d18854629ffb226bf412 ""
   "00_abstract_EN.tex" 1580360970 1793 1633e21c9600a3e9134b255f31212634 ""
   "00_acknowledgementsCH.tex" 1580705248 18 c4eb1df96dea87304762bf1fc602d822 ""
@@ -284,17 +284,17 @@
   "introduction.tex" 1580704476 1053 301f9d09069bc6763324e259ba7baeb0 ""
   "multirow.sty" 1580360971 7533 f7c1f13fc632dd5c9b220a247d233082 ""
   "ntu.sty" 1580360971 7952 5f62df99bd605ce4831ae744e5f31685 ""
-  "ntuvars.tex" 1580360971 2302 9a6facbac6da8a8bb9600e027ebf1e96 ""
-  "thesis.aux" 1580705252 2358 87c651d699e95ae4923885d9abe217ca "pdflatex"
+  "ntuvars.tex" 1580706806 2302 76871e3744c74d2fd43e241bdc99c3d5 ""
+  "thesis.aux" 1580706971 2358 87c651d699e95ae4923885d9abe217ca "pdflatex"
   "thesis.bbl" 1580705250 205 f20843eb01c17e81296676c9fcf23ff4 "bibtex thesis"
-  "thesis.lof" 1580705252 124 8c9439084bcabd8898b4168651b2e6ac "pdflatex"
-  "thesis.lot" 1580705252 99 d6b545055470037adc237a745b5f3394 "pdflatex"
+  "thesis.lof" 1580706971 124 8c9439084bcabd8898b4168651b2e6ac "pdflatex"
+  "thesis.lot" 1580706971 99 d6b545055470037adc237a745b5f3394 "pdflatex"
   "thesis.tex" 1580638438 7035 cf6584bb037b1006ec537e5e953238db ""
-  "thesis.toc" 1580705252 595 b894f2e11e0ae5a51df4cadb4b46ee3e "pdflatex"
+  "thesis.toc" 1580706971 595 b894f2e11e0ae5a51df4cadb4b46ee3e "pdflatex"
   (generated)
-  "thesis.log"
-  "thesis.lot"
-  "thesis.aux"
-  "thesis.pdf"
-  "thesis.toc"
   "thesis.lof"
+  "thesis.toc"
+  "thesis.log"
+  "thesis.pdf"
+  "thesis.aux"
+  "thesis.lot"
